@@ -9,16 +9,22 @@ using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Repositories.ProductRepository;
 using Entities.Dtos;
+using Business.Repositories.ProductImageRepository;
+using Business.Repositories.PriceListDetailRepository;
 
 namespace Business.Repositories.ProductRepository
 {
     public class ProductManager : IProductService
     {
         private readonly IProductDal _productDal;
+        private readonly IProductImageService _productImageService;
+        private readonly IPriceListDetailService _priceListDetailService;
 
-        public ProductManager(IProductDal productDal)
+        public ProductManager(IProductDal productDal, IProductImageService productImageService, IPriceListDetailService priceListDetailService)
         {
             _productDal = productDal;
+            _productImageService = productImageService;
+            _priceListDetailService = priceListDetailService;
         }
 
         //[SecuredAspect("admin,product.add")]
@@ -39,10 +45,22 @@ namespace Business.Repositories.ProductRepository
             return new SuccessResult(ProductMessages.Updated);
         }
 
-        [SecuredAspect("admin,product.delete")]
+        //[SecuredAspect("admin,product.delete")]
         [RemoveCacheAspect("IProductService.Get")]
         public async Task<IResult> Delete(Product product)
         {
+            var images = await _productImageService.GetListByProductId(product.Id);
+            foreach (var image in images)
+            {
+                await _productImageService.Delete(image);
+            }
+
+            var priceListProducts = await _priceListDetailService.GetListByProductId(product.Id);
+            foreach (var priceList in priceListProducts)
+            {
+                await _priceListDetailService.Delete(priceList);
+            }
+
             await _productDal.Delete(product);
             return new SuccessResult(ProductMessages.Deleted);
         }

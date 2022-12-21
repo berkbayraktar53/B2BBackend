@@ -38,7 +38,7 @@ namespace Business.Repositories.PriceListDetailRepository
             return new SuccessResult(PriceListDetailMessages.Updated);
         }
 
-        [SecuredAspect()]
+        //[SecuredAspect()]
         [RemoveCacheAspect("IPriceListDetailService.Get")]
         public async Task<IResult> Delete(PriceListDetail priceListDetail)
         {
@@ -58,6 +58,11 @@ namespace Business.Repositories.PriceListDetailRepository
         public async Task<IDataResult<PriceListDetail>> GetById(int id)
         {
             return new SuccessDataResult<PriceListDetail>(await _priceListDetailDal.Get(p => p.Id == id));
+        }
+
+        public Task<List<PriceListDetail>> GetListByProductId(int productId)
+        {
+            return _priceListDetailDal.GetAll(p => p.ProductId == productId);
         }
     }
 }

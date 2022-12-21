@@ -10,6 +10,7 @@ using Core.Utilities.Result.Concrete;
 using DataAccess.Repositories.CustomerRepository;
 using Entities.Dtos;
 using Core.Utilities.Hashing;
+using Core.Utilities.Business;
 
 namespace Business.Repositories.CustomerRepository
 {
@@ -27,6 +28,13 @@ namespace Business.Repositories.CustomerRepository
         [RemoveCacheAspect("ICustomerService.Get")]
         public async Task<IResult> Add(CustomerRegisterDto customerRegisterDto)
         {
+            IResult result = BusinessRules.Run(await CheckIfEmailExists(customerRegisterDto.Email));
+
+            if (result != null)
+            {
+                return result;
+            }
+
             byte[] passwordHash, passwordSalt;
             HashingHelper.CreatePassword(customerRegisterDto.Password, out passwordHash, out passwordSalt);
             Customer customer = new()
@@ -76,6 +84,16 @@ namespace Business.Repositories.CustomerRepository
         {
             var result = await _customerDal.Get(p => p.Email == email);
             return result;
+        }
+
+        private async Task<IResult> CheckIfEmailExists(string email)
+        {
+            var list = await GetByEmail(email);
+            if (list != null)
+            {
+                return new ErrorResult("Bu mail adresi daha önce kullanýlmýþ");
+            }
+            return new SuccessResult();
         }
     }
 }

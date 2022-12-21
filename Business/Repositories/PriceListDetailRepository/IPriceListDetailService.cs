@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Entities.Concrete;
 using Core.Utilities.Result.Abstract;
 
@@ -14,6 +9,7 @@ namespace Business.Repositories.PriceListDetailRepository
         Task<IResult> Update(PriceListDetail priceListDetail);
         Task<IResult> Delete(PriceListDetail priceListDetail);
         Task<IDataResult<List<PriceListDetail>>> GetList();
+        Task<List<PriceListDetail>> GetListByProductId(int productId);
         Task<IDataResult<PriceListDetail>> GetById(int id);
     }
 }
