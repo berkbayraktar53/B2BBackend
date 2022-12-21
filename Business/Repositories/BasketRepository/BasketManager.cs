@@ -39,7 +39,7 @@ namespace Business.Repositories.BasketRepository
             return new SuccessResult(BasketMessages.Updated);
         }
 
-        [SecuredAspect()]
+        //[SecuredAspect()]
         [RemoveCacheAspect("IBasketService.Get")]
         public async Task<IResult> Delete(Basket basket)
         {
@@ -67,6 +67,11 @@ namespace Business.Repositories.BasketRepository
         public async Task<IDataResult<List<BasketListDto>>> GetListByCustomerId(int customerId)
         {
             return new SuccessDataResult<List<BasketListDto>>(await _basketDal.GetListByCustomerId(customerId));
+        }
+
+        public async Task<List<Basket>> GetListByProductId(int productId)
+        {
+            return await _basketDal.GetAll(p => p.ProductId == productId);
         }
     }
 }
