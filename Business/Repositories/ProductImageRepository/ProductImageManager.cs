@@ -71,7 +71,7 @@ namespace Business.Repositories.ProductImageRepository
             string path = @"./Content/img/" + productImageUpdateDto.ImageUrl;
             _fileService.FileDeleteToServer(path);
             string fileName = _fileService.FileSaveToServer(productImageUpdateDto.Image, "./Content/img/");
-            ProductImage productImage = new ProductImage()
+            ProductImage productImage = new()
             {
                 Id = productImageUpdateDto.Id,
                 ImageUrl = fileName,
@@ -103,7 +103,7 @@ namespace Business.Repositories.ProductImageRepository
 
         public async Task<List<ProductImage>> GetListByProductId(int productId)
         {
-            return await _productImageDal.GetAll(p => p.ProductId == productId));
+            return await _productImageDal.GetAll(p => p.ProductId == productId);
         }
 
         [SecuredAspect()]
